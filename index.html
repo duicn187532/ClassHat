@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>銀行內部 MBTI 測驗</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<h2>銀行內部 MBTI 測驗</h2>
+<label>員工ID: <input id="employeeId" type="text" /></label>
+<div id="quiz"></div>
+<button onclick="submitQuiz()">送出測驗</button>
+<div class="result" id="result"></div>
+<canvas id="radarChart" width="400" height="400"></canvas>
+
+<script src="js/mbti.js"></script>
+</body>
+</html>

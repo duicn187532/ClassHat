@@ -1,0 +1,83 @@
+[
+    {
+      "employee_id": "B1001",
+      "EI_score": 0.62,
+      "SN_score": 0.48,
+      "TF_score": 0.75,
+      "JP_score": 0.55,
+      "type": "ESTJ"
+    },
+    {
+      "employee_id": "B1002",
+      "EI_score": 0.45,
+      "SN_score": 0.60,
+      "TF_score": 0.50,
+      "JP_score": 0.70,
+      "type": "INFP"
+    },
+    {
+      "employee_id": "B1003",
+      "EI_score": 0.80,
+      "SN_score": 0.52,
+      "TF_score": 0.68,
+      "JP_score": 0.42,
+      "type": "ENTP"
+    },
+    {
+      "employee_id": "B1004",
+      "EI_score": 0.38,
+      "SN_score": 0.70,
+      "TF_score": 0.45,
+      "JP_score": 0.60,
+      "type": "ISFJ"
+    },
+    {
+      "employee_id": "B1005",
+      "EI_score": 0.55,
+      "SN_score": 0.48,
+      "TF_score": 0.62,
+      "JP_score": 0.50,
+      "type": "ESTP"
+    },
+    {
+      "employee_id": "B1006",
+      "EI_score": 0.47,
+      "SN_score": 0.58,
+      "TF_score": 0.53,
+      "JP_score": 0.65,
+      "type": "INFP"
+    },
+    {
+      "employee_id": "B1007",
+      "EI_score": 0.70,
+      "SN_score": 0.55,
+      "TF_score": 0.72,
+      "JP_score": 0.40,
+      "type": "ENTJ"
+    },
+    {
+      "employee_id": "B1008",
+      "EI_score": 0.42,
+      "SN_score": 0.62,
+      "TF_score": 0.48,
+      "JP_score": 0.68,
+      "type": "ISFP"
+    },
+    {
+      "employee_id": "B1009",
+      "EI_score": 0.60,
+      "SN_score": 0.50,
+      "TF_score": 0.70,
+      "JP_score": 0.55,
+      "type": "ESTJ"
+    },
+    {
+      "employee_id": "B1010",
+      "EI_score": 0.50,
+      "SN_score": 0.65,
+      "TF_score": 0.52,
+      "JP_score": 0.60,
+      "type": "INFP"
+    }
+  ]
+  

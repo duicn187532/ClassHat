@@ -1,0 +1,38 @@
+[
+    {"dimension":"EI","question":"我喜歡與同事或客戶頻繁互動，而非單獨工作。","reverse":false},
+    {"dimension":"EI","question":"在會議中，我習慣主動發言並提出意見。","reverse":false},
+    {"dimension":"EI","question":"我喜歡參與各種部門活動和社交場合。","reverse":false},
+    {"dimension":"EI","question":"與陌生客戶溝通時，我感到興奮而非緊張。","reverse":false},
+    {"dimension":"EI","question":"我更喜歡獨自專注處理業務，而非團隊討論。","reverse":true},
+    {"dimension":"EI","question":"長時間與人互動後，我需要獨處來恢復精力。","reverse":true},
+    {"dimension":"EI","question":"我傾向先觀察他人，再決定是否發表意見。","reverse":true},
+    {"dimension":"EI","question":"我覺得一對一討論比大型會議更有效率。","reverse":true},
+  
+    {"dimension":"SN","question":"我在做決策時會優先依據現有數據與事實。","reverse":false},
+    {"dimension":"SN","question":"我喜歡按照既有流程和規則處理工作。","reverse":false},
+    {"dimension":"SN","question":"我注重細節，確保業務資料完全正確。","reverse":false},
+    {"dimension":"SN","question":"我傾向按照經驗判斷問題，而非憑直覺。","reverse":false},
+    {"dimension":"SN","question":"我喜歡提出新方法或創新策略來改善業務。","reverse":true},
+    {"dimension":"SN","question":"我喜歡從大局觀點思考未來發展，而非僅看眼前細節。","reverse":true},
+    {"dimension":"SN","question":"我經常尋找模式或趨勢，以預測未來結果。","reverse":true},
+    {"dimension":"SN","question":"我更容易受到靈感和直覺驅動，而非現有資料。","reverse":true},
+  
+    {"dimension":"TF","question":"我在做決策時，會優先考慮邏輯和效率。","reverse":false},
+    {"dimension":"TF","question":"我傾向以客觀標準評估業務表現，而非個人感受。","reverse":false},
+    {"dimension":"TF","question":"當出現問題時，我先分析原因，而非顧及人際關係。","reverse":false},
+    {"dimension":"TF","question":"我認為公平與規則比感情因素更重要。","reverse":false},
+    {"dimension":"TF","question":"我在決策時會考慮同事或客戶的情緒與感受。","reverse":true},
+    {"dimension":"TF","question":"我會為了團隊和諧而調整自己的做法。","reverse":true},
+    {"dimension":"TF","question":"我在衝突處理中會優先尋求理解與妥協。","reverse":true},
+    {"dimension":"TF","question":"我認為同理心是完成工作時的重要考量。","reverse":true},
+  
+    {"dimension":"JP","question":"我喜歡事先安排好工作計畫並按步驟執行。","reverse":false},
+    {"dimension":"JP","question":"我習慣設定明確目標並按時完成。","reverse":false},
+    {"dimension":"JP","question":"我喜歡有條理地處理任務，而非隨機應變。","reverse":false},
+    {"dimension":"JP","question":"我偏好遵循時間表和截止日期完成工作。","reverse":false},
+    {"dimension":"JP","question":"我能靈活調整計畫，隨機應變以解決問題。","reverse":true},
+    {"dimension":"JP","question":"我喜歡在工作中保留選擇的彈性，而非固定流程。","reverse":true},
+    {"dimension":"JP","question":"當遇到意外情況時，我能快速改變策略應對。","reverse":true},
+    {"dimension":"JP","question":"我覺得即時應變和靈活處理比遵循計畫更重要。","reverse":true}
+  ]
+  
