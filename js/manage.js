@@ -2,35 +2,39 @@
 let employees = [];
 let personalityResults = [];
 
-// 讀取兩份資料
-Promise.all([
-  fetch('data/employees.json').then(res=>res.json()),
-  fetch('data/results.json').then(res=>res.json())
-]).then(([empData, resData])=>{
-  employees = empData;
-  personalityResults = resData;
+function loadData() {
+  const cacheBuster = `?v=${Date.now()}`;
+  Promise.all([
+    fetch(`data/employees.json${cacheBuster}`).then(res => res.json()),
+    fetch(`data/results.json${cacheBuster}`).then(res => res.json())
+  ]).then(([empData, resData]) => {
+    employees = empData;
+    personalityResults = resData;
 
-  // 整合性格分數到員工資料
-  employees.forEach(emp=>{
-    const p = personalityResults.find(r => r.employee_id === emp.序號);
-    if(p){
-      emp.EI_score = p.EI_score;
-      emp.SN_score = p.SN_score;
-      emp.TF_score = p.TF_score;
-      emp.JP_score = p.JP_score;
-      emp.type = p.type;
-    } else {
-      emp.EI_score = 0;
-      emp.SN_score = 0;
-      emp.TF_score = 0;
-      emp.JP_score = 0;
-      emp.type = '';
-    }
+    employees.forEach(emp => {
+      const p = personalityResults.find(r => r.employee_id === emp.序號);
+      if(p){
+        emp.EI = p.EI;
+        emp.SN = p.SN;
+        emp.TF = p.TF;
+        emp.JP = p.JP;
+        emp.type = p.type;
+      } else {
+        emp.EI = 0;
+        emp.SN = 0;
+        emp.TF = 0;
+        emp.JP = 0;
+        emp.type = '';
+      }
+    });
+
+    renderTargetsPanel();
+    renderFitTable();
   });
+}
 
-  renderFitTable();
-});
-
+// 頁面初次載入
+loadData();
 // ===== Tab 切換 =====
 const tabs = document.querySelectorAll('.tab-btn');
 const panels = document.querySelectorAll('.tab-panel');
@@ -55,17 +59,20 @@ function loadQuiz() {
     .then(res => res.json())
     .then(data => {
       questions = data;
-      renderQuiz();
+      renderQuizManage();   // 題庫管理用
+      renderQuizQuestions(); // 測驗用
     })
     .catch(err=>{
       console.error("題庫讀取失敗:", err);
       questions = [];
-      renderQuiz();
+      renderQuizManage();
+      renderQuizQuestions();
     });
 }
 
-function renderQuiz() {
-  const div = document.getElementById('quizDiv');
+// ===== 渲染題庫管理頁 =====
+function renderQuizManage() {
+  const div = document.getElementById('quizManageDiv');
   div.innerHTML = '';
   questions.forEach((q,i)=>{
     const row = document.createElement('div');
@@ -110,14 +117,14 @@ function renderQuiz() {
     btn.addEventListener('click', e=>{
       const idx = e.target.dataset.index;
       questions.splice(idx,1);
-      renderQuiz();
+      renderQuizManage();
     });
   });
 }
 
 document.getElementById('addQuestionBtn').addEventListener('click', ()=>{
-  questions.push({question:"新題目", dimension:"EI"});
-  renderQuiz();
+  questions.push({question:"新題目", dimension:"EI", reverse:false});
+  renderQuizManage();
 });
 
 document.getElementById('saveQuizBtn').addEventListener('click', ()=>{
@@ -125,104 +132,199 @@ document.getElementById('saveQuizBtn').addEventListener('click', ()=>{
   alert('題庫已儲存到 localStorage！');
 });
 
-// ================== 欄位分類 ==================
-const personalityFields = ['EI_score','SN_score','TF_score','JP_score'];
-const practicalFields = [
-  '管理','財務會計','金融專業','風險管理',
-  '人力資源','稽核內控','資訊系統','外語','其他',
-  '已歷練職位數','累積訓練時數','累積加班時數',
-  '已取得證照張數','進行年資','情緒分數','潛力人才'
-];
-
-const jobNames = {deposit:'存款科長', personal:'個金業務', corp:'企金業務', advisor:'理專業務'};
-const jobKeys = Object.keys(jobNames);
-
-// ================== 權重初始化（每職務獨立） ==================
-let personalityWeights = {};
-let practicalWeights = {};
-
-jobKeys.forEach(job=>{
-  personalityWeights[job] = {EI_score:0.25, SN_score:0.25, TF_score:0.25, JP_score:0.25};
-  practicalWeights[job] = {
-    管理:0.1, 財務會計:0.1, 金融專業:0.1, 風險管理:0.1,
-    人力資源:0.05, 稽核內控:0.05, 資訊系統:0.05, 外語:0.05, 其他:0.05,
-    已歷練職位數:0.05, 累積訓練時數:0.05, 累積加班時數:0.05,
-    已取得證照張數:0.05, 進行年資:0.05, 情緒分數:0.05, 潛力人才:0.05
-  };
-});
-
-// ================== 權重渲染 ==================
-function renderWeights(){
-  const div = document.getElementById('weightsDiv');
+// ===== MBTI 測驗頁 =====
+function renderQuizQuestions(){
+  const div = document.getElementById('quizQuestions');
   div.innerHTML = '';
+  questions.forEach((q,i)=>{
+    const row = document.createElement('div');
+    row.className='quizRow';
+    row.innerHTML = `
+      <p>${i+1}. ${q.question}</p>
+      <label><input type="radio" name="q${i}" value="1"> 非常同意</label>
+      <label><input type="radio" name="q${i}" value="0.5"> 同意</label>
+      <label><input type="radio" name="q${i}" value="0"> 普通</label>
+      <label><input type="radio" name="q${i}" value="-0.5"> 不同意</label>
+      <label><input type="radio" name="q${i}" value="-1"> 非常不同意</label>
+    `;
+    div.appendChild(row);
+  });
+}
 
-  function createCategory(title, fields, weightsObj){
-    const catDiv = document.createElement('div');
-    catDiv.className='category';
-    catDiv.innerHTML = `<h3>${title}</h3>`;
-    fields.forEach(field=>{
-      const rowDiv = document.createElement('div');
-      rowDiv.className='fieldRow';
-      rowDiv.innerHTML = `<strong>${field}</strong>: `;
-      jobKeys.forEach(job=>{
-        const input = document.createElement('input');
-        input.type='number'; input.min=0; input.max=1; input.step=0.05;
-        input.value = weightsObj[job][field] || 0;
-        input.addEventListener('input', ()=>{
-          weightsObj[job][field] = parseFloat(input.value) || 0;
-          renderTotalWeights();
-          renderFitTable();
-        });
-        rowDiv.appendChild(document.createTextNode(`${jobNames[job]}: `)); // <-- 改成中文名稱
-        rowDiv.appendChild(input);
-        rowDiv.appendChild(document.createTextNode(' '));
-      });
-      catDiv.appendChild(rowDiv);
+document.getElementById('submitQuizBtn').addEventListener('click', ()=>{
+  let scores = {EI:0, SN:0, TF:0, JP:0};
+  let counts = {EI:0, SN:0, TF:0, JP:0};
+
+  questions.forEach((q,i)=>{
+    const radios = document.getElementsByName('q'+i);
+    let val = 0.5; // 預設中立
+    radios.forEach(r=>{
+      if(r.checked) {
+        if(r.value === "1") val = 1;
+        if(r.value === "0") val = 0.5;
+        if(r.value === "-1") val = 0;
+      }
     });
-    div.appendChild(catDiv);
+    if(q.reverse) val = 1 - val; // 反向題處理
+
+    scores[q.dimension] += val;
+    counts[q.dimension] += 1;
+  });
+
+  // 正規化成 0~1 (平均分數)
+  for(let dim in scores){
+    if(counts[dim] > 0) scores[dim] = scores[dim] / counts[dim];
+    else scores[dim] = 0.5; // 沒題目就給中立
   }
 
-  createCategory('性格權重', personalityFields, personalityWeights);
-  createCategory('實際權重', practicalFields, practicalWeights);
+  // 轉成 MBTI 四字母
+  const type =
+    (scores.EI>=0.5?'E':'I') +
+    (scores.SN>=0.5?'S':'N') +
+    (scores.TF>=0.5?'T':'F') +
+    (scores.JP>=0.5?'J':'P');
 
-  renderTotalWeights();
+  // 顯示結果
+  document.getElementById('quizResult').innerHTML = `
+    <div>EI = ${scores.EI.toFixed(2)}</div>
+    <div>SN = ${scores.SN.toFixed(2)}</div>
+    <div>TF = ${scores.TF.toFixed(2)}</div>
+    <div>JP = ${scores.JP.toFixed(2)}</div>
+    <br>
+    👉 判斷類型: <span style="color:#007bff; font-weight:bold">${type}</span>
+  `;
+
+  // ✅ 自動帶入「即時測試」Tab 的輸入框
+  document.getElementById('testEI').value = scores.EI.toFixed(2);
+  document.getElementById('testSN').value = scores.SN.toFixed(2);
+  document.getElementById('testTF').value = scores.TF.toFixed(2);
+  document.getElementById('testJP').value = scores.JP.toFixed(2);
+});
+
+
+
+// ================== 即時測試功能 ==================
+document.getElementById('runTestBtn').addEventListener('click', ()=>{
+  const emp = {
+    EI: parseFloat(document.getElementById('testEI').value) || 0,
+    SN: parseFloat(document.getElementById('testSN').value) || 0,
+    TF: parseFloat(document.getElementById('testTF').value) || 0,
+    JP: parseFloat(document.getElementById('testJP').value) || 0
+  };
+
+  let results = jobKeys.map(job=>{
+    const dist = calcDistance(emp, job);
+    const scores = calcFitScores(emp);
+    return `${jobNames[job]}: 適合度 = ${scores[job].toFixed(2)}% 距離 = ${dist.toFixed(2)}`;
+  }).join('<br>');
+
+  const bestJob = getRecommendation(emp);
+
+  const resultBox = document.getElementById('testResult');
+  resultBox.style.display = "block";   // 顯示
+  resultBox.innerHTML = results + 
+    `<br><br>👉 最推薦職務: <span>${jobNames[bestJob]}</span>`;
+});
+
+
+// ================== 欄位分類 ==================
+const personalityFields = ['EI','SN','TF','JP'];
+
+const jobNames = {internal:'內勤', operation:'作業', sales:'業務'};
+const jobKeys = Object.keys(jobNames);
+
+// ================== 職務理想 MBTI 向量 ==================
+let personalityTargets = {
+  internal:  {EI:0.4, SN:0, TF:0.99, JP:0.63},
+  operation: {EI:0.26, SN:0.61, TF:1, JP:0.75},
+  sales:     {EI:1, SN:0.61, TF:0.81, JP:0.88}
+};
+
+// ================== 渲染控制面板 ==================
+function renderTargetsPanel(){
+  const div = document.getElementById('targetsDiv');
+
+  jobKeys.forEach(job=>{
+    const jobDiv = document.createElement('div');
+    jobDiv.className = 'jobTarget';
+    jobDiv.innerHTML = `<h4>${jobNames[job]}</h4>`;
+
+    personalityFields.forEach(dim=>{
+      const wrapper = document.createElement('span');
+      wrapper.style.marginRight = "50px";   // 每個輸入間距
+      wrapper.innerHTML = `${dim}: `;
+    
+      const input = document.createElement('input');
+      input.type = 'number';
+      input.min = 0; input.max = 1; input.step = 0.05;
+      input.value = personalityTargets[job][dim];
+      input.style.width = "60px"; // 適合投影幕的大小
+      input.addEventListener('input', ()=>{
+        personalityTargets[job][dim] = parseFloat(input.value) || 0;
+        renderFitTable();
+      });
+    
+      wrapper.appendChild(input);
+      jobDiv.appendChild(wrapper);
+    });
+    
+
+    div.appendChild(jobDiv);
+  });
+
+  // 儲存按鈕
+  const saveBtn = document.createElement('button');
+  saveBtn.textContent = "儲存設定";
+  saveBtn.onclick = ()=>{
+    localStorage.setItem('personalityTargets', JSON.stringify(personalityTargets));
+    alert('理想向量已儲存！');
+  };
+  div.appendChild(saveBtn);
+
+  // 如果有 localStorage 設定，讀取回來
+  const saved = localStorage.getItem('personalityTargets');
+  if(saved){
+    personalityTargets = JSON.parse(saved);
+  }
 }
 
-// ================== 計算適配度 ==================
-function calcPersonalityFit(emp, job){
-  const weights = personalityWeights[job];
-  return Object.entries(weights).reduce((sum,[dim,w])=>{
+// ================== 計算距離 ==================
+function calcDistance(emp, job){
+  const target = personalityTargets[job];
+  let sumSq = 0;
+  personalityFields.forEach(dim=>{
     const val = emp[dim] || 0;
-    return sum + val*w;
-  },0).toFixed(2);
+    const t = target[dim] || 0;
+    sumSq += Math.pow(val - t, 2);
+  });
+  return Math.sqrt(sumSq); // <-- 保持原始距離 (不四捨五入)
+}
+// ================== 適配度分數 (倒數 + 比率) ==================
+function calcFitScores(emp){
+  const epsilon = 1e-6;
+  let scores = {};
+  let sumScore = 0;
+
+  jobKeys.forEach(job=>{
+    const dist = calcDistance(emp, job);
+    const score = 1 / (dist + epsilon); // 距離轉倒數
+    scores[job] = score;
+    sumScore += score;
+  });
+
+  // 正規化成比例
+  jobKeys.forEach(job=>{
+    scores[job] = scores[job] / sumScore;
+  });
+
+  return scores; // {internal:0.3, operation:0.2, sales:0.5}
 }
 
-function calcPracticalFit(emp, job){
-  const weights = practicalWeights[job];
-  return Object.entries(weights).reduce((sum,[f,w])=>{
-    let val = emp[f] || 0;
-    if(f==='潛力人才') val = val?1:0;
-    return sum + val*w;
-  },0).toFixed(2);
-}
-
-function calcOverallFit(emp, job){
-  const pFit = parseFloat(calcPersonalityFit(emp, job));
-  const rFit = parseFloat(calcPracticalFit(emp, job));
-  return (pFit*0.4 + rFit*0.6).toFixed(2);
-}
 
 // ================== 推薦職務 ==================
 function getRecommendation(emp){
-  const scores = {};
-  jobKeys.forEach(job=>{
-    scores[job] = calcOverallFit(emp, job);
-  });
-  let bestJob = jobKeys[0];
-  for(let job of jobKeys){
-    if(scores[job] > scores[bestJob]) bestJob = job;
-  }
-  return bestJob;
+  const scores = calcFitScores(emp);
+  return Object.entries(scores).sort((a,b)=>b[1]-a[1])[0][0]; // 取最高分職務
 }
 
 // ================== 渲染適配度表格 ==================
@@ -231,53 +333,25 @@ function renderFitTable(){
   tbody.innerHTML='';
 
   employees.forEach(emp=>{
+    const scores = calcFitScores(emp);
+
     const tr = document.createElement('tr');
     tr.innerHTML = `<td>${emp.序號}</td>` +
       jobKeys.map(job=>{
-        const pFit = calcPersonalityFit(emp, job);
-        const rFit = calcPracticalFit(emp, job);
-        const oFit = calcOverallFit(emp, job);
-        return `<td>${pFit}</td><td>${rFit}</td><td>${oFit}</td>`;
+        const ratio = (scores[job]*100).toFixed(1);
+        return `<td>
+          <div class="fit-bar" style="width:${ratio}%">${ratio}%</div>
+        </td>`;
       }).join('');
 
     const bestJob = getRecommendation(emp);
-    tr.innerHTML += `<td style="font-weight:bold;color:#ff6600">${jobNames[bestJob]}</td>`;
+    tr.innerHTML += `<td style="font-weight:bold;color:#ff6600;font-size:22px">
+      ${jobNames[bestJob]}
+    </td>`;
     tbody.appendChild(tr);
   });
 }
 
-// ================== 計算總權重 ==================
-function calcTotalWeights(){
-  const totals = {};
-  jobKeys.forEach(job=>{
-    const personalitySum = Object.values(personalityWeights[job]).reduce((a,b)=>a+b,0);
-    const practicalSum = Object.values(practicalWeights[job]).reduce((a,b)=>a+b,0);
-    totals[job] = {性格:personalitySum.toFixed(2), 實際:practicalSum.toFixed(2)};
-  });
-  return totals;
-}
-
-// ================== 渲染總權重 ==================
-function renderTotalWeights(){
-  const div = document.getElementById('totalWeightsDiv');
-  div.innerHTML = '<h4>各職務權重加總</h4>';
-  const totals = calcTotalWeights();
-  jobKeys.forEach(job=>{
-    const p = document.createElement('p');
-    const cWarn = (totals[job].性格>1 || totals[job].實際>1)?' ⚠ 超過 1！':'';
-    p.textContent = `${job} -> 性格: ${totals[job].性格}, 實際: ${totals[job].實際}${cWarn}`;
-    if(cWarn) p.style.color='red';
-    div.appendChild(p);
-  });
-}
-
-// ================== 儲存設定 ==================
-document.getElementById('saveWeightsBtn').onclick = ()=>{
-  localStorage.setItem('personalityWeights',JSON.stringify(personalityWeights));
-  localStorage.setItem('practicalWeights',JSON.stringify(practicalWeights));
-  alert('權重已儲存！');
-}
 
 // ================== 初始化 ==================
-renderWeights();
 loadQuiz();

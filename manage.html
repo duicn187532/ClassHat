@@ -1,67 +1,120 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MBTI 人才管理</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MBTI 人才管理系統</title>
+  <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-  <h1>人才庫管理系統</h1>
+  <div class="container">
+    <h1>人才庫管理系統</h1>
 
-  <!-- ===== Tab 切換按鈕 ===== -->
-  <div class="tab-buttons">
-    <button class="tab-btn active" data-tab="mbtiTab">MBTI 題庫</button>
-    <button class="tab-btn" data-tab="weightsTab">權重設定</button>
-    <button class="tab-btn" data-tab="fitTab">員工適配度</button>
+    <!-- ===== Tab 切換按鈕 ===== -->
+    <div class="tab-buttons" >
+      <button class="tab-btn active" data-tab="quizTab">📝 測驗</button>
+      <button class="tab-btn" data-tab="testTab">🧪 適配</button>
+      <button class="tab-btn" data-tab="mbtiTab">📚 題庫</button>
+      <button class="tab-btn" data-tab="targetsTab">🎯 向量</button>
+      <button class="tab-btn" data-tab="fitTab">👥 批次</button>
+    </div>
+
+    <!-- ===== Tab 內容 ===== -->
+    <div class="tab-content">
+
+      <!-- MBTI測驗 tab -->
+      <section id="quizTab" class="tab-panel active">
+        <h2>MBTI 人格測驗</h2>
+        <p style="margin-bottom: 20px; color: var(--text-light);">請根據以下問題選擇最符合您的選項：</p>
+        <div id="quizQuestions"></div>
+        <div style="text-align: center; margin-top: 30px;">
+          <button id="submitQuizBtn">🚀 提交測驗結果</button>
+        </div>
+        <div id="quizResult" style="margin-top:20px;"></div>
+      </section>
+      
+      <!-- 即時測試 -->
+      <section id="testTab" class="tab-panel">
+        <h2>即時測試工具</h2>
+        <p style="margin-bottom: 20px; color: var(--text-light);">手動輸入 MBTI 各維度分數進行快速測試：</p>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="testEI" class="tooltip" data-tooltip="外向(E) vs 內向(I)">
+              💬 EI 分數 (外向性)
+            </label>
+            <input type="number" id="testEI" step="0.01" value="0.5" min="0" max="1">
+          </div>
+          <div class="form-group">
+            <label for="testSN" class="tooltip" data-tooltip="感知(S) vs 直覺(N)">
+              🔍 SN 分數 (感知方式)
+            </label>
+            <input type="number" id="testSN" step="0.01" value="0.5" min="0" max="1">
+          </div>
+          <div class="form-group">
+            <label for="testTF" class="tooltip" data-tooltip="思考(T) vs 情感(F)">
+              🤔 TF 分數 (決策方式)
+            </label>
+            <input type="number" id="testTF" step="0.01" value="0.5" min="0" max="1">
+          </div>
+          <div class="form-group">
+            <label for="testJP" class="tooltip" data-tooltip="判斷(J) vs 知覺(P)">
+              📋 JP 分數 (生活方式)
+            </label>
+            <input type="number" id="testJP" step="0.01" value="0.5" min="0" max="1">
+          </div>
+        </div>
+
+        <div style="text-align:center; margin-top:25px;">
+          <button id="runTestBtn">📊 檢驗適配度</button>
+          <button id="randomTestBtn" class="success-btn">🎲 隨機產生數據</button>
+        </div>
+
+        <div id="testResult" class="result-box" style="display:none;"></div>
+      </section>
+
+      <!-- MBTI 題庫管理 -->
+      <section id="mbtiTab" class="tab-panel">
+        <h2>題庫管理系統</h2>
+        <p style="margin-bottom: 20px; color: var(--text-light);">管理 MBTI 測驗題目，可新增、編輯或刪除題目：</p>
+        <div id="quizManageDiv"></div>
+        <div style="text-align: center; margin-top: 25px;">
+          <button id="addQuestionBtn">➕ 新增題目</button>
+          <button id="saveQuizBtn" class="success-btn">💾 儲存題庫</button>
+        </div>
+      </section>
+
+      <!-- 理想向量設定 -->
+      <section id="targetsTab" class="tab-panel">
+        <h2>職務理想 MBTI 向量設定</h2>
+        <p style="margin-bottom: 20px; color: var(--text-light);">為不同職務設定理想的 MBTI 分數範圍：</p>
+        <div id="targetsDiv"></div>
+      </section>
+
+      <!-- 員工適配度 -->
+      <section id="fitTab" class="tab-panel">
+        <h2>員工職務適合度分析</h2>
+        <p style="margin-bottom: 20px; color: var(--text-light);">查看員工與各職務的適配度評分：</p>
+        <div class="table-wrapper">
+          <table id="fitTable">
+            <thead>
+              <tr>
+                <th>員工編號</th>
+                <th>內勤</th>
+                <th>作業</th>
+                <th>業務</th>
+                <th>最終推薦</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+    </div>
   </div>
 
-  <!-- ===== Tab 內容 ===== -->
-  <div class="tab-content">
-
-    <!-- MBTI 題庫頁 -->
-    <section id="mbtiTab" class="tab-panel active">
-      <h2>MBTI 題庫管理</h2>
-      <div id="quizDiv"></div>
-      <button id="addQuestionBtn">新增題目</button>
-      <button id="saveQuizBtn">儲存題庫</button>
-    </section>
-
-    <!-- 權重設定頁 -->
-    <section id="weightsTab" class="tab-panel">
-      <h2>權重設定</h2>
-      <div id="weightsDiv"></div>
-      <div id="totalWeightsDiv" style="margin-top:10px;"></div>
-      <button id="saveWeightsBtn">儲存設定</button>
-    </section>
-
-    <!-- 適配度頁 -->
-    <section id="fitTab" class="tab-panel">
-      <h2>員工適合度</h2>
-      <table id="fitTable">
-        <thead>
-          <tr>
-            <th>員工編號</th>
-            <th colspan="3">存款科長</th>
-            <th colspan="3">個金業務</th>
-            <th colspan="3">企金業務</th>
-            <th colspan="3">理專業務</th>
-            <th>最終推薦</th>
-          </tr>
-          <tr>
-            <th></th>
-            <th>性格</th><th>實際</th><th>綜合</th>
-            <th>性格</th><th>實際</th><th>綜合</th>
-            <th>性格</th><th>實際</th><th>綜合</th>
-            <th>性格</th><th>實際</th><th>綜合</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </section>
-
-  </div>
 
   <script src="js/manage.js"></script>
 </body>
