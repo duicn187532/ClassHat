@@ -429,6 +429,12 @@
         border-color: var(--primary-orange);
         background: var(--light-orange);
       }
+
+      .targetInput {
+        width: 100px;
+
+        }
+
       
       /* ===== 響應式設計 ===== */
       @media (max-width: 768px) {
@@ -512,6 +518,11 @@
           padding: 10px 12px;
           font-size: 15px;
         }
+        .targetInput {
+            width: 80px;
+    
+            }
+    
       }
       
       /* ===== 滾動條美化 ===== */

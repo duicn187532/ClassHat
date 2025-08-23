@@ -161,7 +161,9 @@ document.getElementById('submitQuizBtn').addEventListener('click', ()=>{
     radios.forEach(r=>{
       if(r.checked) {
         if(r.value === "1") val = 1;
+        if(r.value === "0.5") val = 0.75;
         if(r.value === "0") val = 0.5;
+        if(r.value === "-0.5") val = 0.25;
         if(r.value === "-1") val = 0;
       }
     });
@@ -235,9 +237,9 @@ const jobKeys = Object.keys(jobNames);
 
 // ================== 職務理想 MBTI 向量 ==================
 let personalityTargets = {
-  internal:  {EI:0.4, SN:0, TF:0.99, JP:0.63},
-  operation: {EI:0.26, SN:0.61, TF:1, JP:0.75},
-  sales:     {EI:1, SN:0.61, TF:0.81, JP:0.88}
+  internal:  {EI:0.40, SN:0.37, TF:0.99, JP:0.60},
+  operation: {EI:0.25, SN:0.90, TF:1, JP:0.82},
+  sales:     {EI:1, SN:0.92, TF:0.76, JP:0.90}
 };
 
 // ================== 渲染控制面板 ==================
@@ -258,7 +260,8 @@ function renderTargetsPanel(){
       input.type = 'number';
       input.min = 0; input.max = 1; input.step = 0.05;
       input.value = personalityTargets[job][dim];
-      input.style.width = "60px"; // 適合投影幕的大小
+      // input.style.width = "100px"; // 適合投影幕的大小
+      input.className = 'targetInput';
       input.addEventListener('input', ()=>{
         personalityTargets[job][dim] = parseFloat(input.value) || 0;
         renderFitTable();
@@ -293,8 +296,8 @@ function calcDistance(emp, job){
   const target = personalityTargets[job];
   let sumSq = 0;
   personalityFields.forEach(dim=>{
-    const val = emp[dim] || 0;
-    const t = target[dim] || 0;
+    const val = emp[dim];
+    const t = target[dim];
     sumSq += Math.pow(val - t, 2);
   });
   return Math.sqrt(sumSq); // <-- 保持原始距離 (不四捨五入)
