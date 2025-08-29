@@ -217,7 +217,7 @@ document.getElementById('runTestBtn').addEventListener('click', ()=>{
   let results = jobKeys.map(job=>{
     const dist = calcDistance(emp, job);
     const scores = calcFitScores(emp);
-    return `${jobNames[job]}: 適合度 = ${scores[job].toFixed(2)}% 距離 = ${dist.toFixed(2)}`;
+    return `${jobNames[job]}: 適合度 = ${scores[job].toFixed(2) * 100}% (距離 = ${dist.toFixed(2)})`;
   }).join('<br>');
 
   const bestJob = getRecommendation(emp);
